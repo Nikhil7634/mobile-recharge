@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Mobile Recharge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .progress-bar {
+            height: 6px;
+            transition: width 0.3s ease;
+        }
+        .operator-card {
+            transition: all 0.2s ease;
+        }
+        .operator-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .operator-card.selected {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .task-card {
+            transition: all 0.2s ease;
+            border-radius: 12px;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+        }
+        .task-card.completed {
+            border-left: 4px solid #10b981;
+        }
+        .jio-bg {
+            background: linear-gradient(135deg, #0a4da1 0%, #0c6bca 100%);
+        }
+        .jio-secondary {
+            background-color: #f5f9ff;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 max-w-md mx-auto min-h-screen font-sans">
+    <!-- Jio-like Header -->
+    <header class="jio-bg text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <div class="bg-white rounded-full p-1">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWd7gE_EU9okxdsbO0WMiR2Xt3I2qbMlb7Ng&s" alt="Logo" class="h-8">
+                </div>
+                <h1 class="text-xl font-bold">Free Recharge</h1>
+            </a>
+            <div class="flex items-center space-x-4">
+                <i class="fas fa-wallet text-yellow-300"></i>
+                <span class="hidden md:inline-block">Balance: ₹0</span>
+                <i class="fas fa-bell"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Balance Card -->
+    <div class="container mx-auto px-4 mt-4 max-w-md">
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="p-4 flex justify-between items-center">
+                <div>
+                    <p class="text-gray-500 text-sm">Available Balance</p>
+                    <p class="text-2xl font-bold">₹0</p>
+                </div>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                    Add Money
+                </button>
+            </div>
+            <div class="jio-bg text-white p-4">
+                <p class="text-sm">Complete tasks to earn free recharge!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="container mx-auto px-4 py-6 max-w-md">
+        <!-- Form Section -->
+        <div id="form-section" class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Get FREE Mobile Recharge</h2>
+                    <p class="text-gray-600 mt-2">Complete simple tasks to earn recharge</p>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2" for="mobile-number">Mobile Number</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span class="text-gray-500">+91</span>
+                        </div>
+                        <input type="tel" id="mobile-number" maxlength="10" 
+                               class="block w-full pl-12 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               placeholder="9876543210">
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">Select Your Operator</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div id="airtel" class="operator-card cursor-pointer border-2 border-gray-200 rounded-lg p-4 flex flex-col items-center">
+                            <img src="https://s3-ap-southeast-1.amazonaws.com/bsy/iportal/images/airtel-logo-white-text-vertical.jpg" alt="Airtel" class="h-10 mb-2 rounded-full">
+                            <span class="text-sm font-medium">Airtel</span>
+                        </div>
+                        <div id="jio" class="operator-card cursor-pointer border-2 border-gray-200 rounded-lg p-4 flex flex-col items-center selected">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Reliance_Jio_Logo_%28October_2015%29.svg/1024px-Reliance_Jio_Logo_%28October_2015%29.svg.png" alt="Jio" class="h-10 mb-2">
+                            <span class="text-sm font-medium">Jio</span>
+                        </div>
+                        <div id="vi" class="operator-card cursor-pointer border-2 border-gray-200 rounded-lg p-4 flex flex-col items-center">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyU3IkQVfj8_FiAbRlB_D1bKLjy1lBuw-6Zw&s" alt="Vi" class="h-10 mb-2 rounded-full">
+                            <span class="text-sm font-medium">Vi</span>
+                        </div>
+                        <div id="bsnl" class="operator-card cursor-pointer border-2 border-gray-200 rounded-lg p-4 flex flex-col items-center">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN2nK-58MvWMZ5zh3gJrBvGbaH6UqQKe4v_Q&s" alt="BSNL" class="h-10 mb-2">
+                            <span class="text-sm font-medium">BSNL</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="operator" value="jio">
+                </div>
+                
+                <button id="submit-btn" class="w-full jio-bg hover:bg-blue-800 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <span>Continue</span>
+                    <i class="fas fa-arrow-right ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Task Section -->
+        <div id="task-section" class="bg-white rounded-xl shadow-md overflow-hidden mb-6 hidden">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 id="task-title" class="text-xl font-bold text-gray-800">Complete Tasks</h2>
+                        <p id="progress-text" class="text-sm text-gray-600">Step <span id="current-step">1</span> of 2: Complete <span id="tasks-count">3</span> tasks</p>
+                    </div>
+                    <div class="flex items-center">
+                        <span id="progress-percent" class="text-sm font-medium text-blue-600 mr-2">0%</span>
+                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                            <div id="progress-bar" class="progress-bar bg-blue-600 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="tasks-container" class="space-y-4 mb-6">
+                    <!-- Task cards will be added here -->
+                </div>
+                
+                <button id="complete-btn" disabled class="w-full bg-gray-300 text-gray-600 font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <span>Complete Step</span>
+                    <i class="fas fa-check-circle ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- WhatsApp Share Section -->
+        <div id="whatsapp-share" class="bg-white rounded-xl shadow-md overflow-hidden mb-6 hidden">
+            <div class="p-6">
+                <div class="text-center mb-6">
+                    <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-gift text-green-600 text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Final Step!</h2>
+                    <p class="text-gray-600 mt-2">Share with friends to unlock <span class="font-bold text-green-600">1 YEAR FREE RECHARGE</span></p>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-1">
+                            <i class="fas fa-info-circle text-blue-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">Share this offer in 5 WhatsApp groups to qualify for the special reward!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button id="whatsapp-btn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <i class="fab fa-whatsapp text-xl mr-2"></i>
+                    <span>Share on WhatsApp</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Thank You Section -->
+        <div id="thank-you" class="bg-white rounded-xl shadow-md overflow-hidden text-center hidden">
+            <div class="p-6">
+                <div class="mb-6">
+                    <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-circle text-green-600 text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Congratulations! 🎉</h2>
+                    <p class="text-gray-600 mb-4">You've qualified for <span class="font-bold text-green-600">1 YEAR FREE RECHARGE</span>!</p>
+                    
+                    <div class="bg-gray-50 rounded-lg p-4 inline-block">
+                        <p class="text-sm text-gray-500">Transaction ID</p>
+                        <p id="transaction-id" class="font-mono font-bold text-gray-800">TX987654321</p>
+                    </div>
+                </div>
+                
+                <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 pt-1">
+                            <i class="fas fa-clock text-yellow-500"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-yellow-700">Your recharge will be processed within 24 hours. You'll receive an SMS confirmation.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="w-full mt-6 jio-bg hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center">
+                    <i class="fas fa-home mr-2"></i>
+                    <span>Back to Home</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offers Section -->
+    <div class="container mx-auto px-4 py-4 max-w-md mb-20">
+        <h3 class="text-lg font-bold text-gray-800 mb-3">Recommended Offers</h3>
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="https://cdn-icons-png.flaticon.com/512/575/575927.png" alt="Offer" class="w-auto h-12 object-contain  mt-2 ml-4">
+                <div class="p-3">
+                    <p class="text-sm font-medium">Get 1GB Data Free</p>
+                    <p class="text-xs text-gray-500">Limited time offer</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-lg shadow overflow-hidden">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/Reliance_Jio_Logo_%28October_2015%29.svg/2048px-Reliance_Jio_Logo_%28October_2015%29.svg.png" alt="Offer" class="w-auto h-12 object-contain  mt-2 ml-4">
+                <div class="p-3">
+                    <p class="text-sm font-medium">Unlimited Calls</p>
+                    <p class="text-xs text-gray-500">For 28 days</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Navigation -->
+    <nav class="fixed mx-auto max-w-md bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-around">
+                <a href="#" class="py-3 px-4 text-center text-blue-600">
+                    <i class="fas fa-home block text-xl mb-1"></i>
+                    <span class="text-xs">Home</span>
+                </a>
+                <a href="#" class="py-3 px-4 text-center text-gray-500">
+                    <i class="fas fa-wallet block text-xl mb-1"></i>
+                    <span class="text-xs">Recharge</span>
+                </a>
+                <a href="#" class="py-3 px-4 text-center text-gray-500">
+                    <i class="fas fa-tasks block text-xl mb-1"></i>
+                    <span class="text-xs">Tasks</span>
+                </a>
+                <a href="#" class="py-3 px-4 text-center text-gray-500">
+                    <i class="fas fa-user block text-xl mb-1"></i>
+                    <span class="text-xs">Account</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const formSection = document.getElementById('form-section');
+            const taskSection = document.getElementById('task-section');
+            const whatsappShare = document.getElementById('whatsapp-share');
+            const thankYouSection = document.getElementById('thank-you');
+            const submitBtn = document.getElementById('submit-btn');
+            const completeBtn = document.getElementById('complete-btn');
+            const whatsappBtn = document.getElementById('whatsapp-btn');
+            const tasksContainer = document.getElementById('tasks-container');
+            const taskTitle = document.getElementById('task-title');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+            const progressPercent = document.getElementById('progress-percent');
+            const currentStepSpan = document.getElementById('current-step');
+            const tasksCountSpan = document.getElementById('tasks-count');
+            const operatorCards = document.querySelectorAll('.operator-card');
+            const operatorInput = document.getElementById('operator');
+            
+            // State variables
+            let completedTasks = [];
+            let currentStep = 1;
+            const totalSteps = 2;
+            const tasksPerStep = 3;
+            const allTasks = [
+                {
+                    id: 1,
+                    title: "Install & open this app for 30 seconds",
+                    description: "Just install and keep the app open for 30 seconds",
+                    points: 50,
+                    image: "https://img.icons8.com/?size=512&id=OYtBxIlJwMGA&format=png",
+                    url: "https://example.com/app1",
+                    type: "install"
+                },
+                {
+                    id: 2,
+                    title: "Watch this short video",
+                    description: "Watch the full video to complete this task",
+                    points: 30,
+                    image: "https://cdn-icons-png.freepik.com/512/1384/1384060.png",
+                    url: "https://example.com/video1",
+                    type: "watch"
+                },
+                {
+                    id: 3,
+                    title: "Sign up for this service",
+                    description: "Create an account with your email",
+                    points: 70,
+                    image: "https://img.icons8.com/?size=512&id=OYtBxIlJwMGA&format=png",
+                    url: "https://example.com/signup1",
+                    type: "signup"
+                },
+                {
+                    id: 4,
+                    title: "Play this game for 1 minute",
+                    description: "Just play the game for 60 seconds",
+                    points: 40,
+                    image: "https://cdn-icons-png.freepik.com/512/1384/1384060.png",
+                    url: "https://example.com/game1",
+                    type: "play"
+                },
+                {
+                    id: 5,
+                    title: "Take this quick survey",
+                    description: "Answer 5 simple questions",
+                    points: 60,
+                    image: "https://img.icons8.com/?size=512&id=OYtBxIlJwMGA&format=png",
+                    url: "https://example.com/survey1",
+                    type: "survey"
+                },
+                {
+                    id: 6,
+                    title: "Share with friends",
+                    description: "Share on social media",
+                    points: 20,
+                    image: "https://img.icons8.com/?size=512&id=OYtBxIlJwMGA&format=png",
+                    url: "https://example.com/share1",
+                    type: "share"
+                }
+            ];
+            
+            // Operator selection
+            operatorCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    // Remove selected class from all cards
+                    operatorCards.forEach(c => c.classList.remove('selected'));
+                    // Add selected class to clicked card
+                    this.classList.add('selected');
+                    // Update hidden input value
+                    operatorInput.value = this.id;
+                });
+            });
+            
+            // Form submission
+            submitBtn.addEventListener('click', function() {
+                const mobileNumber = document.getElementById('mobile-number').value;
+                const operator = operatorInput.value;
+                
+                if (!mobileNumber || mobileNumber.length !== 10 || isNaN(mobileNumber)) {
+                    showError('Please enter a valid 10-digit mobile number');
+                    return;
+                }
+                
+                if (!operator) {
+                    showError('Please select your operator');
+                    return;
+                }
+                
+                // Show loading state
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                submitBtn.disabled = true;
+                
+                // Simulate API call
+                setTimeout(() => {
+                    // Show task section
+                    formSection.classList.add('hidden');
+                    taskSection.classList.remove('hidden');
+                    
+                    // Reset submit button
+                    submitBtn.innerHTML = '<span>Continue</span><i class="fas fa-arrow-right ml-2"></i>';
+                    submitBtn.disabled = false;
+                    
+                    // Create tasks for first step
+                    createTasks();
+                }, 1000);
+            });
+            
+            // Create tasks for current step
+            function createTasks() {
+                tasksContainer.innerHTML = '';
+                completedTasks = [];
+                completeBtn.disabled = true;
+                completeBtn.classList.remove('jio-bg', 'text-white', 'hover:bg-blue-700');
+                completeBtn.classList.add('bg-gray-300', 'text-gray-600');
+                
+                const startIndex = (currentStep - 1) * tasksPerStep;
+                const endIndex = Math.min(startIndex + tasksPerStep, allTasks.length);
+                
+                // Update progress text
+                currentStepSpan.textContent = currentStep;
+                tasksCountSpan.textContent = endIndex - startIndex;
+                
+                // Update progress bar
+                updateProgressBar();
+                
+                for (let i = startIndex; i < endIndex; i++) {
+                    const task = allTasks[i];
+                    
+                    const taskCard = document.createElement('div');
+                    taskCard.className = 'task-card bg-white border border-gray-200 rounded-lg p-4 flex items-start';
+                    taskCard.innerHTML = `
+                        <div class="flex-shrink-0 mr-4">
+                            <img src="${task.image}" alt="${task.title}" class="w-12 h-12 rounded-lg object-cover">
+                        </div>
+                        <div class="flex-grow">
+                            <h3 class="font-medium text-gray-800">${task.title}</h3>
+                            <p class="text-sm text-gray-500 mb-2">${task.description}</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded">+${task.points} points</span>
+                                <button class="task-action-btn text-sm font-medium text-blue-600 hover:text-blue-800">
+                                    Start <i class="fas fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    taskCard.dataset.id = task.id;
+                    
+                    const actionBtn = taskCard.querySelector('.task-action-btn');
+                    actionBtn.addEventListener('click', function() {
+                        startTask(task);
+                    });
+                    
+                    tasksContainer.appendChild(taskCard);
+                }
+            }
+            
+            // Start a task
+            function startTask(task) {
+                // Open task in new tab
+                window.open(task.url, '_blank');
+                
+                // Find the task card
+                const taskCard = document.querySelector(`.task-card[data-id="${task.id}"]`);
+                if (taskCard) {
+                    // Update button to show loading
+                    const actionBtn = taskCard.querySelector('.task-action-btn');
+                    actionBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i> Loading...';
+                    actionBtn.disabled = true;
+                    
+                    // Mark as completed when user returns
+                    const checkCompletion = setInterval(() => {
+                        if (document.hasFocus()) {
+                            clearInterval(checkCompletion);
+                            completeTask(task.id);
+                        }
+                    }, 100);
+                }
+            }
+            
+            // Complete a task
+            function completeTask(taskId) {
+                if (!completedTasks.includes(taskId)) {
+                    completedTasks.push(taskId);
+                    const taskCard = document.querySelector(`.task-card[data-id="${taskId}"]`);
+                    if (taskCard) {
+                        // Mark as completed
+                        taskCard.classList.add('completed');
+                        const actionBtn = taskCard.querySelector('.task-action-btn');
+                        actionBtn.innerHTML = '<i class="fas fa-check-circle text-green-500 mr-1"></i> Completed';
+                        actionBtn.classList.remove('text-blue-600', 'hover:text-blue-800');
+                        actionBtn.classList.add('text-green-600');
+                        actionBtn.disabled = true;
+                        
+                        // Update progress
+                        updateProgressBar();
+                        
+                        // Check if all tasks for current step are completed
+                        const startIndex = (currentStep - 1) * tasksPerStep;
+                        const endIndex = Math.min(startIndex + tasksPerStep, allTasks.length);
+                        const stepTasksCompleted = completedTasks.filter(id => {
+                            const task = allTasks.find(t => t.id === id);
+                            return task && allTasks.indexOf(task) >= startIndex && allTasks.indexOf(task) < endIndex;
+                        }).length;
+                        
+                        // Enable complete button if all tasks are done
+                        if (stepTasksCompleted >= (endIndex - startIndex)) {
+                            completeBtn.disabled = false;
+                            completeBtn.classList.remove('bg-gray-300', 'text-gray-600');
+                            completeBtn.classList.add('jio-bg', 'text-white', 'hover:bg-blue-700');
+                        }
+                    }
+                }
+            }
+            
+            // Update progress bar
+            function updateProgressBar() {
+                const startIndex = (currentStep - 1) * tasksPerStep;
+                const endIndex = Math.min(startIndex + tasksPerStep, allTasks.length);
+                const stepTasksCompleted = completedTasks.filter(id => {
+                    const task = allTasks.find(t => t.id === id);
+                    return task && allTasks.indexOf(task) >= startIndex && allTasks.indexOf(task) < endIndex;
+                }).length;
+                
+                const percent = Math.round((stepTasksCompleted / (endIndex - startIndex)) * 100);
+                progressBar.style.width = `${percent}%`;
+                progressPercent.textContent = `${percent}%`;
+            }
+            
+            // Complete process
+            completeBtn.addEventListener('click', function() {
+                // Show loading state
+                 
+                completeBtn.disabled = true;
+                
+                // Simulate processing
+                setTimeout(() => {
+                    if (currentStep < totalSteps) {
+                        // Move to next step
+                        currentStep++;
+                        createTasks();
+                    } else {
+                        // All steps completed, show WhatsApp share
+                        taskSection.classList.add('hidden');
+                        whatsappShare.classList.remove('hidden');
+                        
+                        // Reset complete button
+                        completeBtn.innerHTML = '<span>Complete Step</span><i class="fas fa-check-circle ml-2"></i>';
+                    }
+                }, 1500);
+            });
+            
+            // WhatsApp share button
+            whatsappBtn.addEventListener('click', function() {
+                const mobileNumber = document.getElementById('mobile-number').value;
+                const shareText = `🎉 Amazing Offer! 🎉\n\nI just got FREE RECHARGE from FreeRecharge!\n\nYou can get 1 YEAR FREE RECHARGE too!\n\nRegister now with my referral number: ${mobileNumber}\n\n👉 https://freerecharge.example.com`;
+                
+                // Show loading state
+                whatsappBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Preparing...';
+                whatsappBtn.disabled = true;
+                
+                // Simulate preparation
+                setTimeout(() => {
+                    // Open share dialog
+                    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+                    
+                    // After sharing, show thank you message
+                    setTimeout(() => {
+                        whatsappShare.classList.add('hidden');
+                        thankYouSection.classList.remove('hidden');
+                        
+                        // Generate random transaction ID
+                        const transactionId = 'TX' + Math.floor(100000000 + Math.random() * 900000000);
+                        document.getElementById('transaction-id').textContent = transactionId;
+                        
+                        // Reset WhatsApp button
+                        whatsappBtn.innerHTML = '<i class="fab fa-whatsapp text-xl mr-2"></i><span>Share on WhatsApp</span>';
+                        whatsappBtn.disabled = false;
+                    }, 2000);
+                }, 1000);
+            });
+            
+            // Helper function to show error messages
+            function showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
+                errorDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span>${message}</span>
+                    </div>
+                `;
+                
+                // Insert after the form title
+                const formTitle = document.querySelector('#form-section h2');
+                formTitle.parentNode.insertBefore(errorDiv, formTitle.nextSibling);
+                
+                // Remove after 5 seconds
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>

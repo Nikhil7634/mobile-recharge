@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Winzo Daily Spinner</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="me" href="https://www.blogger.com/profile/16980610411414140882" />
+    <meta name='google-adsense-platform-account' content='ca-host-pub-1556223355139109'/>
+    <meta name='google-adsense-platform-domain' content='blogspot.com'/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto;
+             
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+            transform: rotate(0deg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 8px solid #f8d56b;
+        }
+        
+        .wheel-item {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: bottom right;
+            clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #D4AF37;
+            z-index: 10;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+        
+        .spin-btn {
+            background: linear-gradient(135deg, #D4AF37 0%, #F5D033 100%);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .spin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+        }
+        
+        .spin-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .prize-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+        }
+        
+        .winner-item {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (min-width: 640px) {
+            .wheel-container {
+                zoom: 1.4;
+            }
+            
+            
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-r max-w-md mx-auto from-gray-900 to-orange-900 min-h-screen text-white">
+    <header class="bg-gradient-to-r from-yellow-500 to-yellow-400 py-4 px-6 text-center">
+        <h1 class="text-2xl font-bold">Winzo Daily Spinner</h1>
+        <p>Win up to ₹1000 Daily</p>
+    </header>
+    <main style="zoom: 0.8;" class="p-4 pb-16 mb-5">
+        <div class="mx-auto bg-white rounded-2xl overflow-hidden shadow-xl p-6">
+            <div class="flex justify-between items-center mb-6 bg-gray-50 rounded-lg p-3">
+                <div class="text-sm font-medium text-gray-600">
+                    <i class="fas fa-sync-alt mr-1"></i> Spins Left
+                </div>
+                <div class="text-xl font-bold text-yellow-600" id="chances">1</div>
+            </div>
+            <div class="mb-6">
+                <label for="name-input" class="block text-sm font-medium text-gray-700 mb-1">
+                    <i class="fas fa-user mr-1"></i> Your Name
+                </label>
+                <input type="text" id="name-input" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
+                    placeholder="Enter your name to spin">
+            </div>
+            <div class="wheel-container relative mb-6">
+                <div class="wheel-pointer absolute top-0 left-1/2 transform -translate-x-1/2"></div>
+                <div class="wheel" id="wheel"></div>
+                <div style="zoom: 0.6;" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <div class="text-white font-bold text-2xl">WOLF</div>
+                </div>
+            </div>
+            <div class="prize-card p-4 mb-6 text-center" id="prize-display">
+                <div class="text-gray-500 mb-1">
+                    <i class="fas fa-gift"></i> Your Prize
+                </div>
+                <div class="text-xl font-bold text-gray-800">
+                    Spin to win amazing prizes!
+                </div>
+            </div>
+            <button id="spin-btn" 
+                class="spin-btn w-full py-3 px-4 rounded-xl text-white font-bold text-lg mb-4 flex items-center justify-center">
+                <i class="fas fa-redo mr-2"></i> SPIN NOW
+            </button>
+            <button id="watch-ads-btn" 
+                class="w-full py-3 px-4 rounded-xl bg-blue-600 text-white font-bold text-lg mb-4 hidden flex items-center justify-center">
+                <i class="fas fa-ad mr-2"></i> WATCH AD FOR EXTRA SPIN
+            </button>
+            <div id="ad-notice" class="hidden bg-blue-50 text-blue-800 p-3 rounded-lg text-sm mb-4 flex items-start">
+                <i class="fas fa-info-circle mr-2 mt-0.5"></i>
+                <div>Please watch the full ad and return to this page to get your extra spin!</div>
+            </div>
+            <button id="withdraw-btn" 
+                class="w-full py-3 px-4 rounded-xl bg-green-600 text-white font-bold text-lg mb-4 hidden flex items-center justify-center">
+                <i class="fas fa-rupee-sign mr-2"></i> WITHDRAW PRIZE
+            </button>
+            <div id="success-message" class="hidden bg-green-50 text-green-800 p-3 rounded-lg text-sm mb-4 flex items-start">
+                <i class="fas fa-check-circle mr-2 mt-0.5"></i>
+                <div>Your amount will be transferred to your account soon. Thank you!</div>
+            </div>
+            <div id="share-buttons" class="hidden bg-purple-50 rounded-lg p-4 mb-4">
+                <p class="text-purple-800 font-medium mb-3 text-center">
+                    <i class="fas fa-share-alt mr-1"></i> Share with 5 friends to win extra ₹1,00,000!
+                </p>
+                <button id="whatsapp-share" 
+                    class="w-full py-2 px-4 rounded-lg bg-green-500 text-white font-medium flex items-center justify-center">
+                    <i class="fab fa-whatsapp mr-2"></i> Share on WhatsApp
+                </button>
+            </div>
+            <div id="thank-you-message" class="hidden bg-pink-50 text-pink-800 p-3 rounded-lg text-sm mb-4 text-center">
+                <i class="fas fa-heart mr-1"></i> Thank you for sharing!
+            </div>
+            <div class="mt-6">
+                <div class="text-center text-sm text-gray-600 mb-2">Spinner Days</div>
+                <div class="bg-gray-200 rounded-full h-4">
+                    <div class="bg-yellow-500 h-4 rounded-full" id="progress-bar" style="width: 0%;"></div>
+                </div>
+                <div class="text-center mt-2">
+                    <span id="day-count" class="text-yellow-600 font-bold">0</span>/10
+                    <div class="mt-2 bg-yellow-500 text-white px-3 py-1 rounded inline-flex items-center gap-2">
+                        <i class="fas fa-gift"></i> Day 10 Win ₹1000
+                    </div>
+                </div>
+                <p class="text-center text-gray-500 text-sm mt-2">Spin everyday and get closer to your mega reward</p>
+            </div>
+            <div class="bg-gray-50 p-6 mt-6 rounded-lg">
+                <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                    <i class="fas fa-trophy mr-2 text-yellow-500"></i> Recent Winners
+                </h2>
+                <div id="winners-container" class="space-y-2">
+                    <div class="text-center text-gray-500 py-4">
+                        No winners yet. Be the first!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="fixed bottom-0 max-w-md w-full bg-black p-2 flex justify-around text-white">
+        <a href="#" class="flex flex-col items-center"><i class="fas fa-home"></i> Home</a>
+        <a href="#" class="flex flex-col items-center"><i class="fas fa-trophy"></i> Winners</a>
+        <a href="#" class="flex flex-col items-center"><i class="fas fa-user"></i> Profile</a>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const prizes = [
+                { text: "BONUS ₹2", value: "BONUS ₹2", color: "#FF6384" },
+                { text: "NEXT TIME LUCK", value: "NEXT TIME LUCK", color: "#4BC0C0" },
+                { text: "BETTER LUCK", value: "BETTER LUCK", color: "#36A2EB" },
+                { text: "10% CASHBACK", value: "10% CASHBACK", color: "#9966FF" },
+                { text: "20% CASHBACK", value: "20% CASHBACK", color: "#FFCE56" },
+                { text: "10% DISCOUNT", value: "10% DISCOUNT", color: "#8AC249" },
+                { text: "20% DISCOUNT", value: "20% DISCOUNT", color: "#EA5F89" },
+                { text: "FREE TICKET", value: "FREE TICKET", color: "#0CC2AA" },
+                { text: "REFERRAL BONUS", value: "REFERRAL BONUS", color: "#FF9F40" },
+                { text: "BONUS ₹5", value: "BONUS ₹5", color: "#FCC100" }
+            ];
+            
+            let chances = 1;
+            let currentPrize = null;
+            let isSpinning = false;
+            let userName = "";
+            let spinDays = 0;
+            
+            const wheel = document.getElementById('wheel');
+            const spinBtn = document.getElementById('spin-btn');
+            const prizeDisplay = document.getElementById('prize-display');
+            const watchAdsBtn = document.getElementById('watch-ads-btn');
+            const withdrawBtn = document.getElementById('withdraw-btn');
+            const successMessage = document.getElementById('success-message');
+            const shareButtons = document.getElementById('share-buttons');
+            const whatsappShare = document.getElementById('whatsapp-share');
+            const thankYouMessage = document.getElementById('thank-you-message');
+            const chancesDisplay = document.getElementById('chances');
+            const nameInput = document.getElementById('name-input');
+            const winnersContainer = document.getElementById('winners-container');
+            const adNotice = document.getElementById('ad-notice');
+            const progressBar = document.getElementById('progress-bar');
+            const dayCount = document.getElementById('day-count');
+            
+            const AD_URL = "https://example.com/your-ad-page.html";
+            
+            if (sessionStorage.getItem('adWatched') === 'true') {
+                giveExtraSpin();
+                sessionStorage.removeItem('adWatched');
+            }
+            
+            let winners = JSON.parse(localStorage.getItem('spinnerWinners')) || [];
+            renderWinners();
+            
+            spinDays = parseInt(localStorage.getItem('spinDays')) || 0;
+            updateProgress();
+            
+            function createWheel() {
+                const segmentAngle = 360 / prizes.length;
+                const radius = 150;
+                
+                prizes.forEach((prize, index) => {
+                    const segment = document.createElement('div');
+                    segment.className = 'wheel-item';
+                    segment.style.backgroundColor = prize.color;
+                    segment.style.transform = `rotate(${segmentAngle * index}deg)`;
+                    segment.style.clipPath = 'polygon(0% 0%, 100% 0%, 97% 100%)';
+                    
+                    const text = document.createElement('div');
+                    text.textContent = prize.text;
+                    const middleAngle = segmentAngle * index + segmentAngle / 2;
+                    text.style.transform = ` rotate(305deg) translateY(58px) rotate(119deg) translateX(-37px) `;
+                    text.style.position = 'absolute';
+                    text.style.fontSize = '12px';
+                    text.style.fontWeight = 'bold';
+                    text.style.color = 'white';
+                    text.style.textShadow = '1px 1px 2px rgba(0,0,0,0.5)';
+                    
+                    segment.appendChild(text);
+                    wheel.appendChild(segment);
+                });
+            }
+            
+            function lightenColor(color, percent) {
+                const num = parseInt(color.replace("#", ""), 16);
+                const amt = Math.round(2.55 * percent);
+                const R = (num >> 16) + amt;
+                const G = (num >> 8 & 0x00FF) + amt;
+                const B = (num & 0x0000FF) + amt;
+                return `#${(
+                    0x1000000 +
+                    (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+                    (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+                    (B < 255 ? (B < 1 ? 0 : B) : 255)
+                ).toString(16).slice(1)}`;
+            }
+            
+            function createConfetti() {
+                const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+                
+                for (let i = 0; i < 100; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    const animationDuration = Math.random() * 3 + 2;
+                    
+                    confetti.style.animation = `confettiFall ${animationDuration}s ease-out forwards`;
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, animationDuration * 1000);
+                }
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes confettiFall {
+                        0% { opacity: 1; transform: translateY(-100vh) rotate(0deg); }
+                        100% { opacity: 0; transform: translateY(100vh) rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            function spinWheel() {
+                if (isSpinning) return;
+                
+                userName = nameInput.value.trim();
+                if (!userName) {
+                    showAlert("Please enter your name first!");
+                    return;
+                }
+                
+                isSpinning = true;
+                spinBtn.disabled = true;
+                prizeDisplay.innerHTML = `
+                    <div class="text-gray-500 mb-1">
+                        <i class="fas fa-spinner fa-spin"></i> Spinning
+                    </div>
+                    <div class="text-xl font-bold text-gray-800">
+                        Good luck!
+                    </div>
+                `;
+                
+                const prizeIndex = Math.floor(Math.random() * prizes.length);
+                currentPrize = prizes[prizeIndex];
+                
+                const segmentAngle = 360 / prizes.length;
+                const targetAngle = 1800 + (360 - (segmentAngle * prizeIndex)) + (segmentAngle / 2);
+                
+                wheel.style.transform = `rotate(${targetAngle}deg)`;
+                
+                setTimeout(() => {
+                    isSpinning = false;
+                    prizeDisplay.innerHTML = `
+                        <div class="text-gray-500 mb-1">
+                            <i class="fas fa-gift"></i> Congratulations!
+                        </div>
+                        <div class="text-xl font-bold text-gray-800">
+                            You won: ${currentPrize.value}!
+                        </div>
+                    `;
+                    
+                    prizeDisplay.classList.add('pulse');
+                    
+                    chances--;
+                    chancesDisplay.textContent = chances;
+                    spinDays = (spinDays + 1) % 11;
+                    localStorage.setItem('spinDays', spinDays);
+                    updateProgress();
+                    
+                    if (["BONUS ₹2", "BONUS ₹5", "10% CASHBACK", "20% CASHBACK"].includes(currentPrize.text)) {
+                        createConfetti();
+                    }
+                    
+                    winners.unshift({
+                        name: userName,
+                        prize: currentPrize.value,
+                        date: new Date().toLocaleString()
+                    });
+                    
+                    if (winners.length > 10) {
+                        winners = winners.slice(0, 10);
+                    }
+                    
+                    localStorage.setItem('spinnerWinners', JSON.stringify(winners));
+                    renderWinners();
+                    
+                    withdrawBtn.classList.remove('hidden');
+                    
+                    if (chances === 0) {
+                        spinBtn.classList.add('hidden');
+                        watchAdsBtn.classList.remove('hidden');
+                    }
+                }, 4000);
+            }
+            
+            function showAlert(message) {
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+                alertDiv.textContent = message;
+                document.body.appendChild(alertDiv);
+                
+                setTimeout(() => {
+                    alertDiv.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+                    setTimeout(() => alertDiv.remove(), 300);
+                }, 3000);
+            }
+            
+            function sendToAd() {
+                adNotice.classList.remove('hidden');
+                watchAdsBtn.classList.add('hidden');
+                
+                sessionStorage.setItem('expectingAdReturn', 'true');
+                
+                const adWindow = window.open(AD_URL, '_blank');
+                
+                const checkAdReturn = setInterval(() => {
+                    if (adWindow.closed) {
+                        clearInterval(checkAdReturn);
+                        handleAdReturn();
+                    }
+                }, 500);
+            }
+            
+            function handleAdReturn() {
+                giveExtraSpin();
+                sessionStorage.removeItem('expectingAdReturn');
+            }
+            
+            function giveExtraSpin() {
+                chances++;
+                chancesDisplay.textContent = chances;
+                watchAdsBtn.classList.add('hidden');
+                adNotice.classList.add('hidden');
+                spinBtn.classList.remove('hidden');
+                prizeDisplay.innerHTML = `
+                    <div class="text-gray-500 mb-1">
+                        <i class="fas fa-gift"></i> Your Prize
+                    </div>
+                    <div class="text-xl font-bold text-gray-800">
+                        Spin to win a prize!
+                    </div>
+                `;
+                prizeDisplay.classList.remove('pulse');
+                
+                const originalText = spinBtn.innerHTML;
+                spinBtn.innerHTML = `<i class="fas fa-check"></i> EXTRA SPIN ADDED!`;
+                spinBtn.classList.remove('bg-gradient-to-r', 'from-yellow-500', 'to-yellow-400');
+                spinBtn.classList.add('bg-green-500');
+                
+                setTimeout(() => {
+                    spinBtn.innerHTML = originalText;
+                    spinBtn.classList.remove('bg-green-500');
+                    spinBtn.classList.add('bg-gradient-to-r', 'from-yellow-500', 'to-yellow-400');
+                }, 2000);
+            }
+            
+            function withdrawPrize() {
+                withdrawBtn.classList.add('hidden');
+                prizeDisplay.classList.add('hidden');
+                successMessage.classList.remove('hidden');
+                shareButtons.classList.remove('hidden');
+                prizeDisplay.classList.remove('pulse');
+            }
+            
+            function shareOnWhatsApp() {
+                const shareText = `I just won ${currentPrize.value} on Winzo Daily Spinner! Spin now to win amazing prizes!`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                window.open(whatsappUrl, '_blank');
+                
+                shareButtons.classList.add('hidden');
+                thankYouMessage.classList.remove('hidden');
+            }
+            
+            function renderWinners() {
+                winnersContainer.innerHTML = '';
+                
+                if (winners.length === 0) {
+                    winnersContainer.innerHTML = '<div class="text-center text-gray-500 py-4">No winners yet. Be the first!</div>';
+                    return;
+                }
+                
+                winners.forEach(winner => {
+                    const winnerElement = document.createElement('div');
+                    winnerElement.className = 'winner-item bg-white p-3 rounded-lg shadow-sm flex justify-between items-center';
+                    winnerElement.innerHTML = `
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 text-yellow-800 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-gray-800">${winner.name}</div>
+                                <div class="text-xs text-gray-500">${winner.date}</div>
+                            </div>
+                        </div>
+                        <div class="bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-medium">
+                            ${winner.prize}
+                        </div>
+                    `;
+                    winnersContainer.appendChild(winnerElement);
+                });
+            }
+            
+            function updateProgress() {
+                const progress = (spinDays / 10) * 100;
+                progressBar.style.width = `${progress}%`;
+                dayCount.textContent = spinDays;
+            }
+            
+            spinBtn.addEventListener('click', spinWheel);
+            watchAdsBtn.addEventListener('click', sendToAd);
+            withdrawBtn.addEventListener('click', withdrawPrize);
+            whatsappShare.addEventListener('click', shareOnWhatsApp);
+            
+            createWheel();
+        });
+    </script>
+</body>
+</html>
