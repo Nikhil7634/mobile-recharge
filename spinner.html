@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Winzo Daily Spinner</title>
+    <title>Valtara Joy Daily Spinner</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="me" href="https://www.blogger.com/profile/16980610411414140882" />
@@ -126,7 +126,7 @@
 </head>
 <body class="bg-gradient-to-r max-w-md mx-auto from-gray-900 to-orange-900 min-h-screen text-white">
     <header class="bg-gradient-to-r from-yellow-500 to-yellow-400 py-4 px-6 text-center">
-        <h1 class="text-2xl font-bold">Winzo Daily Spinner</h1>
+        <h1 class="text-2xl font-bold">Valtara Joy Daily Spinner</h1>
         <p>Win up to ₹1000 Daily</p>
     </header>
     <main style="zoom: 0.8;" class="p-4 pb-16 mb-5">
@@ -142,7 +142,7 @@
                     <i class="fas fa-user mr-1"></i> Your Name
                 </label>
                 <input type="text" id="name-input" 
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
+                    class="w-full text-black px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition"
                     placeholder="Enter your name to spin">
             </div>
             <div class="wheel-container relative mb-6">
@@ -225,16 +225,14 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const prizes = [
-                { text: "BONUS ₹2", value: "BONUS ₹2", color: "#FF6384" },
-                { text: "NEXT TIME LUCK", value: "NEXT TIME LUCK", color: "#4BC0C0" },
-                { text: "BETTER LUCK", value: "BETTER LUCK", color: "#36A2EB" },
-                { text: "10% CASHBACK", value: "10% CASHBACK", color: "#9966FF" },
-                { text: "20% CASHBACK", value: "20% CASHBACK", color: "#FFCE56" },
-                { text: "10% DISCOUNT", value: "10% DISCOUNT", color: "#8AC249" },
-                { text: "20% DISCOUNT", value: "20% DISCOUNT", color: "#EA5F89" },
-                { text: "FREE TICKET", value: "FREE TICKET", color: "#0CC2AA" },
-                { text: "REFERRAL BONUS", value: "REFERRAL BONUS", color: "#FF9F40" },
-                { text: "BONUS ₹5", value: "BONUS ₹5", color: "#FCC100" }
+            { text: "REAL CASH ₹2", value: "BONUS ₹2", color: "#FF6384" },
+            { text: "BETTER LUCK", value: "BETTER LUCK", color: "#36A2EB" },
+            { text: "REAL CASH ₹100", value: "REAL CASH ₹100", color: "#9966FF" },
+            { text: "REAL CASH ₹500", value: "REAL CASH ₹500", color: "#FFCE56" },
+            { text: "BIKE", value: "BIKE", color: "#8AC249" },
+            { text: "GOLD COIN", value: "GOLD COIN", color: "#EA5F89" },
+            { text: "FREE TICKET", value: "FREE TICKET", color: "#0CC2AA" },
+            { text: "REAL CASH ₹5", value: "BONUS ₹5", color: "#FCC100" }
             ];
             
             let chances = 1;
@@ -392,7 +390,7 @@
                     localStorage.setItem('spinDays', spinDays);
                     updateProgress();
                     
-                    if (["BONUS ₹2", "BONUS ₹5", "10% CASHBACK", "20% CASHBACK"].includes(currentPrize.text)) {
+                    if (["REAL CASH ₹2", "REAL CASH ₹5", "REAL CASH ₹100", "REAL CASH ₹500", "GOLD COIN", "BIKE"].includes(currentPrize.text)) {
                         createConfetti();
                     }
                     
@@ -488,8 +486,9 @@
             }
             
             function shareOnWhatsApp() {
-                const shareText = `I just won ${currentPrize.value} on Winzo Daily Spinner! Spin now to win amazing prizes!`;
-                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+                const currentUrl = window.location.href;
+                const shareText = `I just won ${currentPrize.value} on Valtara Joy Daily Spinner! Spin now to win amazing prizes!`;
+                const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}%20${encodeURIComponent(currentUrl)}`;
                 window.open(whatsappUrl, '_blank');
                 
                 shareButtons.classList.add('hidden');
